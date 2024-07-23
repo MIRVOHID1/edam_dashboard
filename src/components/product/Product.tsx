@@ -1,12 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Products.css";
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchProducts, createProduct } from '../../redux/product/productSlice';
 import axios from 'axios';
 
-interface Product {
+interface Product1 {
     _id: string;
+    __v?: number; // Add __v if it is present in the data returned from the server
+    title: string;
+    image: string;
+    subtitle: string;
+    description: string;
+    rate: number;
+    price: number;
+    size: number;
+    color: string;
+}
+
+interface Product2 {
     title: string;
     image: string;
     subtitle: string;
@@ -18,11 +27,9 @@ interface Product {
 }
 
 const Product = () => {
-    const dispatch = useDispatch();
-    const products = useSelector((state: any) => state.product);
+    const [products, setProducts] = useState<Product1[]>([]);
     const [showModal, setShowModal] = useState<boolean>(false);
-    const [newProduct, setNewProduct] = useState<Product>({
-        _id: '',
+    const [newProduct, setNewProduct] = useState<Product2>({
         title: "",
         image: '',
         subtitle: "",
@@ -33,8 +40,8 @@ const Product = () => {
         color: ""
     });
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [selectedProduct, setSelectedProduct] = useState<Product>({
-        _id: '',
+    const [selectedProduct, setSelectedProduct] = useState<Product1>({
+        _id: "",
         title: "",
         image: "",
         subtitle: "",
@@ -46,12 +53,21 @@ const Product = () => {
     });
 
     useEffect(() => {
-        dispatch(fetchProducts());
-    }, [dispatch]);
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get<Product1[]>('https://ecommerce-backend-fawn-eight.vercel.app/api/products');
+                setProducts(response.data);
+            } catch (error) {
+                console.error('Failed to fetch products', error);
+            }
+        };
+
+        fetchProducts();
+    }, []);
 
     const handleDelete = async (id: string) => {
         try {
-            const response = await axios.delete(
+            await axios.delete(
                 `https://ecommerce-backend-fawn-eight.vercel.app/api/products/${id}`,
                 {
                     headers: {
@@ -59,61 +75,61 @@ const Product = () => {
                     },
                 }
             );
-
-            if (response.data) {
-                dispatch(fetchProducts());
-            }
+            setProducts(products.filter(product => product._id !== id));
         } catch (err) {
             console.log(err);
         }
-        console.log(id);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setNewProduct({ ...newProduct, [name]: value });
-    }
-
-    const handleSubmit = () => {
-        dispatch(createProduct(newProduct));
-        setShowModal(false);
+        setNewProduct(prevState => ({ ...prevState, [name]: value }));
     };
 
-    const handleProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setSelectedProduct({ ...selectedProduct, [name]: value });
-    };
-
-    const handleOk = async () => {
-        setIsModalOpen(false);
+    const handleSubmit = async () => {
         try {
-            const response = await axios.put(
-                `https://ecommerce-backend-fawn-eight.vercel.app/api/products/${selectedProduct._id}`,
-                {
-                    title: selectedProduct.title,
-                    subtitle: selectedProduct.subtitle,
-                    image: selectedProduct.image,
-                    description: selectedProduct.description,
-                    rate: selectedProduct.rate,
-                    price: selectedProduct.price,
-                    size: selectedProduct.size,
-                    color: selectedProduct.color,
-                },
+            const response = await axios.post<Product1>(
+                'https://ecommerce-backend-fawn-eight.vercel.app/api/products',
+                newProduct,
                 {
                     headers: {
                         Authorization: localStorage.getItem("token") || "",
                     },
                 }
             );
-            if (response.data) {
-                dispatch(fetchProducts());
-            }
+            setProducts([...products, response.data]);
+            setShowModal(false);
+        } catch (error) {
+            console.error('Failed to create product', error);
+        }
+    };
+
+    const handleProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setSelectedProduct(prevState => ({ ...prevState, [name]: value }));
+    };
+
+    const handleOk = async () => {
+        setIsModalOpen(false);
+        try {
+            const { _id, __v, ...productData } = selectedProduct; // Remove _id and __v before updating
+            await axios.put(
+                `https://ecommerce-backend-fawn-eight.vercel.app/api/products/${_id}`,
+                productData,
+                {
+                    headers: {
+                        Authorization: localStorage.getItem("token") || "",
+                    },
+                }
+            );
+            setProducts(products.map(product =>
+                product._id === _id ? { ...productData, _id } : product
+            ));
         } catch (error) {
             console.log(error);
         }
     };
 
-    console.log(products);
     return (
         <div className="products">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -137,11 +153,10 @@ const Product = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {products.map((item: Product, index: number) => (
+                    {products.map((item, index) => (
                         <tr key={index}>
                             <td>{index + 1}</td>
                             <td>{item.title}</td>
-
                             <td>
                                 <img src={item.image} alt={item.title} width="100" />
                             </td>
@@ -172,49 +187,42 @@ const Product = () => {
                             placeholder="Product Image URL"
                             onChange={handleInputChange}
                         />
-
                         <input
                             type="text"
                             name="subtitle"
                             placeholder="Product subtitle"
                             onChange={handleInputChange}
                         />
-
-                        <input  
+                        <input
                             type="text"
                             name="description"
                             placeholder="Product description"
                             onChange={handleInputChange}
-                        />  
-
+                        />
                         <input
                             type="number"
                             name="rate"
                             placeholder="Product rate"
                             onChange={handleInputChange}
                         />
-
                         <input
                             type="number"
                             name="price"
                             placeholder="Product price"
                             onChange={handleInputChange}
                         />
-
                         <input
                             type="number"
                             name="size"
                             placeholder="Product size"
                             onChange={handleInputChange}
                         />
-
                         <input
                             type="text"
                             name="color"
                             placeholder="Product color"
                             onChange={handleInputChange}
                         />
-
                         <button onClick={handleSubmit}>Add Product</button>
                         <button onClick={() => setShowModal(false)}>Cancel</button>
                     </div>
@@ -236,49 +244,42 @@ const Product = () => {
                             value={selectedProduct.image}
                             onChange={handleProductChange}
                         />
-
                         <input
                             type="text"
                             name="subtitle"
                             value={selectedProduct.subtitle}
                             onChange={handleProductChange}
                         />
-
                         <input
                             type="text"
                             name="description"
                             value={selectedProduct.description}
                             onChange={handleProductChange}
                         />
-
                         <input
-                            type="text"
+                            type="number"
                             name="rate"
                             value={selectedProduct.rate}
                             onChange={handleProductChange}
                         />
-
                         <input
-                            type="text"
+                            type="number"
                             name="price"
                             value={selectedProduct.price}
                             onChange={handleProductChange}
                         />
-
                         <input
-                            type="text"
+                            type="number"
                             name="size"
                             value={selectedProduct.size}
                             onChange={handleProductChange}
                         />
-
                         <input
                             type="text"
                             name="color"
                             value={selectedProduct.color}
                             onChange={handleProductChange}
                         />
-
                         <button onClick={handleOk}>Update Product</button>
                         <button onClick={() => setIsModalOpen(false)}>Cancel</button>
                     </div>

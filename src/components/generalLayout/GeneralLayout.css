@@ -1,0 +1,44 @@
+.generalLayout{
+    /* position: fixed; */
+    left : 0;
+    top: 0;
+    /* z-index: 1; */
+    height: 100vh;
+    width: 250px;
+    background-color: aqua;
+    padding: 20px 20px 20px 20px;
+    flex-direction: column;
+    display: flex;
+    row-gap: 10px;
+}
+
+.navigates{
+    text-decoration: none;
+    color: black;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    padding: 10px;
+    width: 90%;
+    border-radius: 10px;
+}
+
+
+/* GeneralLayout.css */
+.generalLayout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .navigates {
+    margin: 10px;
+    text-decoration: none;
+    color: #1890ff;
+  }
+  
+  .navigates:hover {
+    text-decoration: underline;
+  }
+  

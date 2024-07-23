@@ -4,6 +4,7 @@ import Register from "./page/Auth/Register";
 import Login from "./page/Auth/Login";
 import GeneralLayout from "./components/generalLayout/GeneralLayout";
 import "./App.css";
+import PrivateRoute from "./components/privateRoute/PrivateRoute";
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -11,7 +12,7 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      {showGeneralLayout && <GeneralLayout />}
+      {showGeneralLayout && <PrivateRoute element={<GeneralLayout />} />}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

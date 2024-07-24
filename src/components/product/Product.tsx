@@ -4,7 +4,7 @@ import axios from 'axios';
 
 interface Product1 {
     _id: string;
-    __v?: number; // Add __v if it is present in the data returned from the server
+    __v?: number;
     title: string;
     image: string;
     subtitle: string;

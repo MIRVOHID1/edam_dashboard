@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import type { MenuProps } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
-import { Link, Route, Routes } from 'react-router-dom';
+import { Link, Route, Routes } from 'react-router-dom';;
 import Product from '../product/Product';
 import Category from '../categories/Category';
 import PrivateRoute from '../privateRoute/PrivateRoute';
@@ -26,7 +26,6 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  // { label: <Link to="/" className="navigates">Dashboard</Link>, key: '0', icon: < /> },
   { label: <Link to="/categories" className="navigates">Categories</Link>, key: '1', icon: <UserOutlined /> },
   { label: <Link to="/products" className="navigates">Products</Link>, key: '2', icon: <UserOutlined /> },
 ];
@@ -39,7 +38,7 @@ const GeneralLayout: React.FC = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
+      <Sider style={{ paddingTop: 10 }} collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
         <div className="demo-logo-vertical" />
         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
       </Sider>

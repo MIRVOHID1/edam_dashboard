@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Mahsulot tipi
 interface Product {
   id: string;
   title: string;
@@ -14,12 +13,10 @@ interface Product {
   color: string;
 }
 
-// Dastlabki holat tipi
 type ProductState = Product[];
 
 const initialState: ProductState = [];
 
-// Mahsulotlarni olish uchun async thunk
 export const fetchProducts = createAsyncThunk<Product[]>(
   'product/fetchProducts',
   async () => {
@@ -28,7 +25,6 @@ export const fetchProducts = createAsyncThunk<Product[]>(
   }
 );
 
-// Yangi mahsulot yaratish uchun async thunk
 export const createProduct = createAsyncThunk<Product, Product>(
   'product/createProduct',
   async (newProduct, ThunkAPI) => {

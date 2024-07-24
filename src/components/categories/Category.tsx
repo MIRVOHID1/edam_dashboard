@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCategories, createCategory } from '../../redux/category/categorySlice';
@@ -11,7 +8,7 @@ import "./Categoryes.css";
 
 interface Category {
     _id: string;
-    id?: string; // Agar id maydoni bo'lsa
+    id?: string;
     name: string;
     image: string;
 }

@@ -1,11 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// State tipi
 interface Category {
   id: string;
   name: string;
-  // Qo'shimcha xususiyatlar qo'shishingiz mumkin
 }
 
 interface CategoryState {
@@ -14,14 +12,12 @@ interface CategoryState {
   error: string | null;
 }
 
-// Dastlabki holat
 const initialState: CategoryState = {
   isLoading: false,
   value: [],
   error: null
 };
 
-// Kategoriyalarni olish uchun async thunk
 export const fetchCategories = createAsyncThunk<Category[]>(
   'category/fetchCategories',
   async () => {
@@ -30,7 +26,6 @@ export const fetchCategories = createAsyncThunk<Category[]>(
   }
 );
 
-// Yangi kategoriya yaratish uchun async thunk
 export const createCategory = createAsyncThunk<Category, Category>(
   'category/createCategory',
   async (newCategory, { dispatch, getState }) => {
@@ -41,7 +36,6 @@ export const createCategory = createAsyncThunk<Category, Category>(
           Authorization: token
         }
       });
-      // Kategoriya yaratilib bo'lgandan keyin yangilash
       dispatch(fetchCategories());
       return res.data;
     }
